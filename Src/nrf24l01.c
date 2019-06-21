@@ -93,7 +93,7 @@ NRF_RESULT NRF_Init(nrf24l01_dev* dev)
 
     NRF_RXTXControl(dev, NRF_STATE_RX);
 
-    NRF_FlushRX(dev);
+   // NRF_FlushRX(dev);
 
     return NRF_OK;
 }
@@ -110,7 +110,7 @@ NRF_RESULT NRF_SendCommand(nrf24l01_dev* dev, uint8_t cmd, uint8_t* tx, uint8_t*
         myTX[1 + i] = tx[i];
         myRX[i] = 0;
     }
-
+		//every new command must be started by a high to low transition on CSN
     NRF_CS_RESETPIN(dev);/*
     if (HAL_SPI_TransmitReceive(dev->spi, myTX, myRX, 1 + len, NRF_SPI_TIMEOUT)
         != HAL_OK) {
@@ -210,7 +210,7 @@ NRF_RESULT NRF_WriteTXPayload(nrf24l01_dev* dev, uint8_t* data)
     }
     return NRF_OK;
 }
-
+/*
 NRF_RESULT NRF_FlushTX(nrf24l01_dev* dev)
 {
     uint8_t rx = 0;
@@ -220,8 +220,8 @@ NRF_RESULT NRF_FlushTX(nrf24l01_dev* dev)
     }
     return NRF_OK;
 }
-
-
+*/
+/*
 NRF_RESULT NRF_FlushRX(nrf24l01_dev* dev)
 {
     uint8_t rx = 0;
@@ -231,10 +231,11 @@ NRF_RESULT NRF_FlushRX(nrf24l01_dev* dev)
     }
     return NRF_OK;
 }
-
+*/
 NRF_RESULT NRF_SetDataRate(nrf24l01_dev* dev, NRF_DATA_RATE rate)
 {
     uint8_t reg = 0;
+	
     if (NRF_ReadRegister(dev, NRF_RF_SETUP, &reg) != NRF_OK) {
         return NRF_ERROR;
     }
@@ -606,7 +607,7 @@ NRF_RESULT NRF_ReceivePacket(nrf24l01_dev* dev, uint8_t* data)
 
     return NRF_OK;
 }
-
+/*
 NRF_RESULT NRF_PushPacket(nrf24l01_dev* dev, uint8_t* data)
 {
 
@@ -622,7 +623,7 @@ NRF_RESULT NRF_PushPacket(nrf24l01_dev* dev, uint8_t* data)
 
     return NRF_OK;
 }
-
+*/
 NRF_RESULT NRF_PullPacket(nrf24l01_dev* dev, uint8_t* data)
 {
 

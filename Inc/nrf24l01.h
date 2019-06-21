@@ -5,45 +5,56 @@
 #include "string.h"
 
 /* Registers */
-#define NRF_CONFIG 0x00
+#define NRF_CONFIG 0x00  			/*	number of bytes in the CRC is set by CRCO bit
+														
+															*/
+
 #define NRF_EN_AA 0x01
-#define NRF_EN_RXADDR 0x02
-#define NRF_SETUP_AW 0x03
-#define NRF_SETUP_RETR 0x04
+#define NRF_EN_RXADDR 0x02  	//data pipes are enabled with bits in this register(by default only 0&1 are enabled
+#define NRF_SETUP_AW 0x03  		//address width (3,4,5 byte)
+#define NRF_SETUP_RETR 0x04		/*setting the ARC bits to set number of times it is allowed to retransmit
+																ARD setup in steps of 250 us(500 us is enough for any ACK payload)*/
 #define NRF_RF_CH 0x05
 #define NRF_RF_SETUP 0x06
-#define NRF_STATUS 0x07
-#define NRF_OBSERVE_TX 0x08
+#define NRF_STATUS 0x07				//its content read to MISO after a high to low transition on CSN
+#define NRF_OBSERVE_TX 0x08   /*ARC_CNT counts the number of retransmissions for the current transaction(reset when new transaction)
+															 PLOS_CNT counts the total number of retransmission since the last channel changed(reset when RF_CH change)
+															*/
 #define NRF_CD 0x09
+//Each data pipe adress is configured in these registers
 #define NRF_RX_ADDR_P0 0x0A
 #define NRF_RX_ADDR_P1 0x0B
 #define NRF_RX_ADDR_P2 0x0C
 #define NRF_RX_ADDR_P3 0x0D
 #define NRF_RX_ADDR_P4 0x0E
 #define NRF_RX_ADDR_P5 0x0F
-#define NRF_TX_ADDR 0x10
+#define NRF_TX_ADDR 0x10			//must be the same as the RX_ADDR_P0
+//..............................................................
+//static payload length is set by this register on the receiver side
 #define NRF_RX_PW_P0 0x11
 #define NRF_RX_PW_P1 0x12
 #define NRF_RX_PW_P2 0x13
 #define NRF_RX_PW_P3 0x14
 #define NRF_RX_PW_P4 0x15
 #define NRF_RX_PW_P5 0x16
-#define NRF_FIFO_STATUS 0x17
-#define NRF_DYNPD 0x1C
-#define NRF_FEATURE 0x1D
-
+//.......................
+#define NRF_FIFO_STATUS 0x17 //read if the TX and RX FIFO are full or empty
+#define NRF_DYNPD 0x1C			 // in rx mode this register must be set to enable DPL(DPL_P0 bit)
+#define NRF_FEATURE 0x1D  	 /* -settinf the EN_DYN_ACK bit in this register
+																-setting the EN_DLP bit to enable DPL 
+																-setting the EN_ACK_PAY bit to enable ACK with payload*/
 /* Commands */
 #define NRF_CMD_R_REGISTER 0x00
 #define NRF_CMD_W_REGISTER 0x20
 #define NRF_CMD_R_RX_PAYLOAD 0x61
 #define NRF_CMD_W_TX_PAYLOAD 0xA0
-#define NRF_CMD_FLUSH_TX 0xE1
-#define NRF_CMD_FLUSH_RX 0xE2
-#define NRF_CMD_REUSE_TX_PL 0xE3
+//#define NRF_CMD_FLUSH_TX 0xE1
+//#define NRF_CMD_FLUSH_RX 0xE2
+#define NRF_CMD_REUSE_TX_PL 0xE3				 //alternative to auto retransmit,set nrf to retransmit a number of times
 #define NRF_CMD_ACTIVATE 0x50
-#define NRF_CMD_R_RX_PL_WID 0x60
-#define NRF_CMD_W_ACK_PAYLOAD 0xA8
-#define NRF_CMD_W_TX_PAYLOAD_NOACK 0xB0
+#define NRF_CMD_R_RX_PL_WID 0x60    		 //read the length of the received payload 
+#define NRF_CMD_W_ACK_PAYLOAD 0xA8			 // DPL must be enabled 
+#define NRF_CMD_W_TX_PAYLOAD_NOACK 0xB0  //set the NO_ACK flag bit in the Packet Control Field
 #define NRF_CMD_NOP 0xFF
 #define NRF_SPI_TIMEOUT 100000
 
@@ -143,8 +154,8 @@ NRF_RESULT NRF_SendPacket(nrf24l01_dev* dev, uint8_t* data);
 NRF_RESULT NRF_ReceivePacket(nrf24l01_dev* dev, uint8_t* data);
 
 /* Non-Blocking Data Sending / Receiving FXs */
-NRF_RESULT NRF_PushPacket(nrf24l01_dev* dev, uint8_t* data);
-NRF_RESULT NRF_PullPacket(nrf24l01_dev* dev, uint8_t* data);
+//NRF_RESULT NRF_PushPacket(nrf24l01_dev* dev, uint8_t* data);
+//NRF_RESULT NRF_PullPacket(nrf24l01_dev* dev, uint8_t* data);
 
 NRF_RESULT NRF_SendCommand(nrf24l01_dev* dev, uint8_t cmd, uint8_t* tx, uint8_t* rx, uint8_t len);
 /* CMD */
@@ -152,8 +163,8 @@ NRF_RESULT NRF_ReadRegister(nrf24l01_dev* dev, uint8_t reg, uint8_t* data);
 NRF_RESULT NRF_WriteRegister(nrf24l01_dev* dev, uint8_t reg, uint8_t* data);
 NRF_RESULT NRF_ReadRXPayload(nrf24l01_dev* dev, uint8_t* data);
 NRF_RESULT NRF_WriteTXPayload(nrf24l01_dev* dev, uint8_t* data);
-NRF_RESULT NRF_FlushTX(nrf24l01_dev* dev);
-NRF_RESULT NRF_FlushRX(nrf24l01_dev* dev);
+//NRF_RESULT NRF_FlushTX(nrf24l01_dev* dev);
+//NRF_RESULT NRF_FlushRX(nrf24l01_dev* dev);
 
 /* RF_SETUP */
 NRF_RESULT NRF_SetDataRate(nrf24l01_dev* dev, NRF_DATA_RATE rate);
