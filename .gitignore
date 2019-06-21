@@ -1,9 +1,3 @@
-Drivers/*
-Middlewares/*
-MDK-ARM/*
-!*.uvprojx
-!*.lst
-!*.s
 *.docx
 *.swp
 *.pdf

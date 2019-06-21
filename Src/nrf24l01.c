@@ -175,8 +175,7 @@ void NRF_IRQ_Handler(nrf24l01_dev* dev)
 NRF_RESULT NRF_ReadRegister(nrf24l01_dev* dev, uint8_t reg, uint8_t* data)
 {
     uint8_t tx = 0;
-    if (NRF_SendCommand(dev, NRF_CMD_R_REGISTER | reg, &tx, data, 1)
-        != NRF_OK) {
+    if (NRF_SendCommand(dev, NRF_CMD_R_REGISTER | reg, &tx, data, 1)!= NRF_OK) {
         return NRF_ERROR;
     }
     return NRF_OK;

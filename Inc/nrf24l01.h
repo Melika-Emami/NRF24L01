@@ -48,7 +48,7 @@
 #define NRF_SPI_TIMEOUT 100000
 
 typedef enum {
-   // NRF_DATA_RATE_250KBPS = 1,
+    NRF_DATA_RATE_250KBPS = 1,
     NRF_DATA_RATE_1MBPS = 0,
     NRF_DATA_RATE_2MBPS = 2
 } NRF_DATA_RATE;
@@ -146,7 +146,6 @@ NRF_RESULT NRF_ReceivePacket(nrf24l01_dev* dev, uint8_t* data);
 NRF_RESULT NRF_PushPacket(nrf24l01_dev* dev, uint8_t* data);
 NRF_RESULT NRF_PullPacket(nrf24l01_dev* dev, uint8_t* data);
 
-/* LOW LEVEL STUFF (you don't have to look in here...)*/
 NRF_RESULT NRF_SendCommand(nrf24l01_dev* dev, uint8_t cmd, uint8_t* tx, uint8_t* rx, uint8_t len);
 /* CMD */
 NRF_RESULT NRF_ReadRegister(nrf24l01_dev* dev, uint8_t reg, uint8_t* data);
