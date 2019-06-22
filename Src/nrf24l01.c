@@ -93,7 +93,7 @@ NRF_RESULT NRF_Init(nrf24l01_dev* dev)
 
     NRF_RXTXControl(dev, NRF_STATE_RX);
 
-   // NRF_FlushRX(dev);
+    NRF_FlushRX(dev);
 
     return NRF_OK;
 }
@@ -110,12 +110,14 @@ NRF_RESULT NRF_SendCommand(nrf24l01_dev* dev, uint8_t cmd, uint8_t* tx, uint8_t*
         myTX[1 + i] = tx[i];
         myRX[i] = 0;
     }
-		//every new command must be started by a high to low transition on CSN
-    NRF_CS_RESETPIN(dev);/*
+
+    NRF_CS_RESETPIN(dev);
+		
     if (HAL_SPI_TransmitReceive(dev->spi, myTX, myRX, 1 + len, NRF_SPI_TIMEOUT)
         != HAL_OK) {
         return NRF_ERROR;
-    }*/
+    }
+				
     for (i = 0; i < len; i++) {
         rx[i] = myRX[1 + i];
     }
@@ -175,8 +177,11 @@ void NRF_IRQ_Handler(nrf24l01_dev* dev)
 NRF_RESULT NRF_ReadRegister(nrf24l01_dev* dev, uint8_t reg, uint8_t* data)
 {
     uint8_t tx = 0;
-    if (NRF_SendCommand(dev, NRF_CMD_R_REGISTER | reg, &tx, data, 1)!= NRF_OK) {
+    if (NRF_SendCommand(dev, NRF_CMD_R_REGISTER | reg, &tx, data, 1)
+        != NRF_OK) {
+				HAL_UART_Transmit(&huart2, (uint8_t *)"NRF_ReadRegister Error\r\n", strlen("NRF_ReadRegister Error\r\n"), 10);
         return NRF_ERROR;
+				
     }
     return NRF_OK;
 }
@@ -186,7 +191,9 @@ NRF_RESULT NRF_WriteRegister(nrf24l01_dev* dev, uint8_t reg, uint8_t* data)
     uint8_t rx = 0;
     if (NRF_SendCommand(dev, NRF_CMD_W_REGISTER | reg, data, &rx, 1)
         != NRF_OK) {
+				HAL_UART_Transmit(&huart2, (uint8_t *)"NRF_WriteRegister Error\r\n", strlen("NRF_WriteRegister Error\r\n"), 10);
         return NRF_ERROR;
+				
     }
     return NRF_OK;
 }
@@ -196,6 +203,7 @@ NRF_RESULT NRF_ReadRXPayload(nrf24l01_dev* dev, uint8_t* data)
     uint8_t tx[dev->PayloadLength];
     if (NRF_SendCommand(dev, NRF_CMD_R_RX_PAYLOAD, tx, data, dev->PayloadLength)
         != NRF_OK) {
+				HAL_UART_Transmit(&huart2, (uint8_t *)"RF_ReadRXPayload Error\r\n", strlen("RF_ReadRXPayload Error\r\n"), 10);
         return NRF_ERROR;
     }
     return NRF_OK;
@@ -206,36 +214,41 @@ NRF_RESULT NRF_WriteTXPayload(nrf24l01_dev* dev, uint8_t* data)
     uint8_t rx[dev->PayloadLength];
     if (NRF_SendCommand(dev, NRF_CMD_W_TX_PAYLOAD, data, rx, dev->PayloadLength)
         != NRF_OK) {
+				HAL_UART_Transmit(&huart2, (uint8_t *)"RF_WriteRXPayload Error\r\n", strlen("RF_writeRXPayload Error\r\n"), 10);
         return NRF_ERROR;
+				
     }
     return NRF_OK;
 }
-/*
+
 NRF_RESULT NRF_FlushTX(nrf24l01_dev* dev)
 {
     uint8_t rx = 0;
     uint8_t tx = 0;
     if (NRF_SendCommand(dev, NRF_CMD_FLUSH_TX, &tx, &rx, 0) != NRF_OK) {
-        return NRF_ERROR;
+			HAL_UART_Transmit(&huart2, (uint8_t *)"NRF_FlushTX Error\r\n", strlen("NRF_FlushTX Error\r\n"), 10);
+      return NRF_ERROR;
+			
     }
     return NRF_OK;
 }
-*/
-/*
+
+
 NRF_RESULT NRF_FlushRX(nrf24l01_dev* dev)
 {
     uint8_t rx = 0;
     uint8_t tx = 0;
     if (NRF_SendCommand(dev, NRF_CMD_FLUSH_RX, &tx, &rx, 0) != NRF_OK) {
+			  HAL_UART_Transmit(&huart2, (uint8_t *)"NRF_FlushRX Error\r\n", strlen("NRF_FlushRX Error\r\n"), 10);
         return NRF_ERROR;
+			  
     }
     return NRF_OK;
 }
-*/
+
 NRF_RESULT NRF_SetDataRate(nrf24l01_dev* dev, NRF_DATA_RATE rate)
 {
     uint8_t reg = 0;
-	
     if (NRF_ReadRegister(dev, NRF_RF_SETUP, &reg) != NRF_OK) {
         return NRF_ERROR;
     }
@@ -607,7 +620,7 @@ NRF_RESULT NRF_ReceivePacket(nrf24l01_dev* dev, uint8_t* data)
 
     return NRF_OK;
 }
-/*
+
 NRF_RESULT NRF_PushPacket(nrf24l01_dev* dev, uint8_t* data)
 {
 
@@ -623,7 +636,7 @@ NRF_RESULT NRF_PushPacket(nrf24l01_dev* dev, uint8_t* data)
 
     return NRF_OK;
 }
-*/
+
 NRF_RESULT NRF_PullPacket(nrf24l01_dev* dev, uint8_t* data)
 {
 

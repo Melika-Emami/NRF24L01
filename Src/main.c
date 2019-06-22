@@ -68,7 +68,11 @@ static void MX_USART2_UART_Init(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-uint8_t data[32] = "";
+uint8_t pipnumber;
+nrf24l01_dev* dev;
+char myAckPayload[32] = "Ack by STMF4";
+char data[32] = "";
+char myRxData[32];
 int count = 0;
 void receive_data_from_uart(){
 	HAL_UART_Transmit(&huart2, (uint8_t *)"OK", 2 ,100);
@@ -156,7 +160,12 @@ int main(void)
 		HAL_UART_Transmit(&huart2, (uint8_t *)data, 5 ,100);
 	//	HAL_UART_Transmit(&huart2, (uint8_t *)"OK", strlen("OK") ,100);
 		
-		
+		if(NRF_EnableRXPipe( &dev , pipnumber) == NRF_OK)
+		{
+			//NRF_RESULT NRF_ReadRXPayload( &dev, myRxData);
+			//myRxData[32] = '\r'; myRxData[32+1] = '\n';
+			HAL_UART_Transmit(&huart2, (uint8_t *)myRxData, 32, 10);
+		}
 		HAL_Delay(1000);
 
   }
@@ -232,7 +241,7 @@ static void MX_SPI1_Init(void)
   hspi1.Init.Direction = SPI_DIRECTION_2LINES;
   hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;
+  hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
   hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
