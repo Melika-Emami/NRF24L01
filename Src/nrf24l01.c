@@ -1,4 +1,5 @@
 #include "nrf24l01.h"
+
 extern UART_HandleTypeDef huart2;
 
 static void NRF_CS_SETPIN(nrf24l01_dev* nrf)

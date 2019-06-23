@@ -158,7 +158,6 @@ int main(void)
 //		res = NRF_ReceivePacket(&nrf, data);
 	
 		HAL_UART_Transmit(&huart2, (uint8_t *)data, 5 ,100);
-	//	HAL_UART_Transmit(&huart2, (uint8_t *)"OK", strlen("OK") ,100);
 		
 		if(NRF_EnableRXPipe( &nrf , pipnumber) == NRF_OK)
 		{

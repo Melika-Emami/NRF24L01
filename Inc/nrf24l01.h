@@ -36,11 +36,11 @@
 #define NRF_RX_PW_P4 0x15
 #define NRF_RX_PW_P5 0x16
 //.......................
-#define NRF_FIFO_STATUS 0x17 		//read if the TX and RX FIFO are full or empty
-#define NRF_DYNPD 0x1C			 		// in rx mode this register must be set to enable DPL(DPL_P0 bit)
-#define NRF_FEATURE 0x1D  	 		/* -settinf the EN_DYN_ACK bit in this register
-																	 -setting the EN_DLP bit to enable DPL 
-																	 -setting the EN_ACK_PAY bit to enable ACK with payload*/
+#define NRF_FIFO_STATUS 0x17 //read if the TX and RX FIFO are full or empty
+#define NRF_DYNPD 0x1C			 // in rx mode this register must be set to enable DPL(DPL_P0 bit)
+#define NRF_FEATURE 0x1D  	 /* -settinf the EN_DYN_ACK bit in this register
+																-setting the EN_DLP bit to enable DPL 
+																-setting the EN_ACK_PAY bit to enable ACK with payload*/
 /* Commands */
 #define NRF_CMD_R_REGISTER 0x00
 #define NRF_CMD_W_REGISTER 0x20
@@ -113,7 +113,6 @@ typedef struct {
     uint8_t* RX_BUFFER;
     uint8_t* TX_BUFFER;
 
-    /* channel can be 0~127 */
     uint8_t RF_CHANNEL;
 
     /* nrf24L01 Tx/Rx address
@@ -196,5 +195,6 @@ NRF_RESULT NRF_SetTXAddress(nrf24l01_dev* nrf, uint8_t* address); // 5bytes of a
 
 /* RX_PW_P0 */
 NRF_RESULT NRF_SetRXPayloadWidth_P0(nrf24l01_dev* nrf, uint8_t width);
+
 
 #endif
