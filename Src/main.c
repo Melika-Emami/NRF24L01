@@ -7,7 +7,7 @@
   ** This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
   * USER CODE END. Other portions of this file, whether 
-  * inserted by the user or by software development tools
+  * inserted by the user or by software nrfelopment tools
   * are owned by their respective copyright owners.
   *
   * COPYRIGHT(c) 2019 STMicroelectronics
@@ -69,7 +69,7 @@ static void MX_USART2_UART_Init(void);
 
 /* USER CODE BEGIN 0 */
 uint8_t pipnumber;
-nrf24l01_dev* dev;
+nrf24l01_dev* nrf;
 char myAckPayload[32] = "Ack by STMF4";
 char data[32] = "";
 char myRxData[32];
@@ -104,26 +104,26 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-		nrf24l01_dev dev;
-		dev.spi = &hspi1;
-    dev.DATA_RATE = NRF_DATA_RATE_1MBPS;
-    dev.TX_POWER = NRF_TX_PWR_0dBm;
-    dev.CRC_WIDTH = NRF_CRC_WIDTH_1B;
-    dev.ADDR_WIDTH = NRF_ADDR_WIDTH_5;
-    dev.STATE = NRF_STATE_TX; // this parameter can be deleted, each Rx/Tx will change this reg
-    dev.PayloadLength = 32; // maximum is 32 Bytes
-    dev.RetransmitCount = 10; // maximum is 15 times
-    dev.RetransmitDelay = 0x0F; // 4000us, LSB:250us
-		dev.RF_CHANNEL = 0;
+		nrf24l01_dev nrf;
+		nrf.spi = &hspi1;
+    nrf.DATA_RATE = NRF_DATA_RATE_1MBPS;
+    nrf.TX_POWER = NRF_TX_PWR_0dBm;
+    nrf.CRC_WIDTH = NRF_CRC_WIDTH_1B;
+    nrf.ADDR_WIDTH = NRF_ADDR_WIDTH_5;
+    nrf.STATE = NRF_STATE_TX; // this parameter can be deleted, each Rx/Tx will change this reg
+    nrf.PayloadLength = 32; // maximum is 32 Bytes
+    nrf.RetransmitCount = 10; // maximum is 15 times
+    nrf.RetransmitDelay = 0x0F; // 4000us, LSB:250us
+		nrf.RF_CHANNEL = 0;
 		
     //enable RCC for GPIO port!!
     __HAL_RCC_GPIOA_CLK_ENABLE();
-    dev.NRF_CSN_GPIOx = GPIOA;
-    dev.NRF_CSN_GPIO_PIN = GPIO_PIN_0;
-    dev.NRF_CE_GPIOx = GPIOA;
-    dev.NRF_CE_GPIO_PIN = GPIO_PIN_1;
-    dev.NRF_IRQ_GPIOx = GPIOA;
-    dev.NRF_IRQ_GPIO_PIN = GPIO_PIN_2;
+    nrf.NRF_CSN_GPIOx = GPIOA;
+    nrf.NRF_CSN_GPIO_PIN = GPIO_PIN_0;
+    nrf.NRF_CE_GPIOx = GPIOA;
+    nrf.NRF_CE_GPIO_PIN = GPIO_PIN_1;
+    nrf.NRF_IRQ_GPIOx = GPIOA;
+    nrf.NRF_IRQ_GPIO_PIN = GPIO_PIN_2;
 		
   /* USER CODE END Init */
 
@@ -140,7 +140,7 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 	
-	NRF_Init(&dev);
+	NRF_Init(&nrf);
   static NRF_RESULT res;
 
   /* USER CODE END 2 */
@@ -154,15 +154,15 @@ int main(void)
 
   /* USER CODE BEGIN 3 */
 		receive_data_from_uart();
-	//	res = NRF_SendPacket(&dev, data);
-//		res = NRF_ReceivePacket(&dev, data);
+//		res = NRF_SendPacket(&nrf, data);
+//		res = NRF_ReceivePacket(&nrf, data);
 	
 		HAL_UART_Transmit(&huart2, (uint8_t *)data, 5 ,100);
 	//	HAL_UART_Transmit(&huart2, (uint8_t *)"OK", strlen("OK") ,100);
 		
-		if(NRF_EnableRXPipe( &dev , pipnumber) == NRF_OK)
+		if(NRF_EnableRXPipe( &nrf , pipnumber) == NRF_OK)
 		{
-			//NRF_RESULT NRF_ReadRXPayload( &dev, myRxData);
+			//NRF_RESULT NRF_ReadRXPayload( &nrf, myRxData);
 			//myRxData[32] = '\r'; myRxData[32+1] = '\n';
 			HAL_UART_Transmit(&huart2, (uint8_t *)myRxData, 32, 10);
 		}
